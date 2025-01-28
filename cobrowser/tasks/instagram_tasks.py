@@ -7,6 +7,7 @@ import os
 import base64
 import tempfile
 from typing import Optional
+import random
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +26,27 @@ class InstagramManager:
         return cls._instances[unique_id]
 
     @classmethod
+    def _get_random_proxy(cls) -> str:
+        """Get a random proxy from the proxy.txt file"""
+        try:
+            with open("../../proxy.txt", "r") as f:
+                proxies = [line.strip() for line in f if line.strip()]
+            if not proxies:
+                raise Exception("No valid proxies found in proxy.txt")
+
+            proxy = random.choice(proxies)
+            # Split the proxy string into its components
+            username, password, host, port = proxy.split(":")
+
+            # Format the proxy string in the required format
+            formatted_proxy = f"https://{username}:{password}@{host}:{port}"
+            return formatted_proxy
+
+        except Exception as e:
+            logger.error(f"Failed to get random proxy: {str(e)}")
+            raise
+
+    @classmethod
     def _authenticate(cls, unique_id: str, username: str, password: str) -> Client:
         """Authenticate with Instagram"""
         cl = Client()
@@ -36,6 +58,8 @@ class InstagramManager:
                     session = json.load(f)
 
                 cl.set_settings(session)
+                # Set random proxy before login
+                cl.set_proxy(cls._get_random_proxy())
                 cl.login(username, password)
 
                 try:
@@ -50,6 +74,8 @@ class InstagramManager:
                     cl.set_settings({})
                     cl.set_uuids(old_session["uuids"])
 
+            # Set random proxy before login attempt
+            cl.set_proxy(cls._get_random_proxy())
             # Login with username and password
             if cl.login(username, password):
                 # Save the session for future use
