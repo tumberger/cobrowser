@@ -15,3 +15,10 @@ Run the application:
 ```
 python3 -m cobrowser.api.main
 ```
+
+## Manual Pre-Commit Hooks
+
+```
+pre-commit run --all-files  # Run on all files
+pre-commit run              # Run only on staged files
+```

@@ -4,4 +4,4 @@ class PolicyDecider:
     """
     def decide_instagram_post(self, user_data, request_payload):
         # TODO - Implementation of decision logic
-        pass 
+        pass
