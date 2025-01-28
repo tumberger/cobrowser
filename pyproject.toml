@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cobrowser"
+version = "0.1.0"
+dependencies = [
+    "fastapi>=0.68.0",
+    "uvicorn>=0.15.0",
+    "celery>=5.2.0",
+    "redis>=4.0.0",
+    "pydantic>=1.8.0",
+    "pydantic-settings>=2.0.0",
+    "requests>=2.26.0",
+    "python-multipart>=0.0.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["cobrowser"] 
