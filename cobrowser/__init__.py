@@ -1,0 +1,3 @@
+"""
+CoBrowser package
+"""

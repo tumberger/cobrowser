@@ -1,9 +1,11 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     """
     Application settings and configuration
     """
+
     APP_NAME: str = "CoBrowser"
     DEBUG: bool = False
 
