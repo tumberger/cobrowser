@@ -94,7 +94,14 @@ class InstagramManager:
     @classmethod
     def _get_session_file(cls, unique_id: str) -> str:
         """Get the session file path for a specific user"""
-        return f"sessions/{unique_id}_session.json"
+        session_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            "cobrowser",
+            "api",
+            "sessions",
+        )
+        os.makedirs(session_dir, exist_ok=True)
+        return os.path.join(session_dir, f"{unique_id}_session.json")
 
     def upload_photo(
         self,
@@ -200,7 +207,7 @@ class InstagramManager:
         password: str,
         amount: int = 20,
         selected_filter: str = "",
-        thread_message_limit: Optional[int] = None
+        thread_message_limit: Optional[int] = None,
     ) -> dict:
         """Get direct threads from Instagram"""
         try:
@@ -208,38 +215,40 @@ class InstagramManager:
             threads = client.direct_threads(
                 amount=amount,
                 selected_filter=selected_filter,
-                thread_message_limit=thread_message_limit
+                thread_message_limit=thread_message_limit,
             )
-            
+
             # Convert threads to serializable format
             thread_list = []
             for thread in threads:
                 users = []
                 for user in thread.users:
-                    users.append({
-                        "pk": user.pk,
-                        "username": user.username,
-                        "full_name": user.full_name,
-                        "profile_pic_url": str(user.profile_pic_url)
-                    })
-                    
-                thread_list.append({
-                    "thread_id": thread.id,
-                    "thread_pk": thread.pk,
-                    "users": users,
-                    "last_activity": thread.last_activity_at.isoformat() if thread.last_activity_at else None
-                })
-                
-            return {
-                "status": "success",
-                "threads": thread_list
-            }
-            
+                    users.append(
+                        {
+                            "pk": user.pk,
+                            "username": user.username,
+                            "full_name": user.full_name,
+                            "profile_pic_url": str(user.profile_pic_url),
+                        }
+                    )
+
+                thread_list.append(
+                    {
+                        "thread_id": thread.id,
+                        "thread_pk": thread.pk,
+                        "users": users,
+                        "last_activity": (
+                            thread.last_activity_at.isoformat()
+                            if thread.last_activity_at
+                            else None
+                        ),
+                    }
+                )
+
+            return {"status": "success", "threads": thread_list}
+
         except Exception as e:
             logger.error(f"Failed to get direct threads: {str(e)}")
             raise HTTPException(
-                status_code=400,
-                detail=f"Failed to get direct threads: {str(e)}"
+                status_code=400, detail=f"Failed to get direct threads: {str(e)}"
             )
-
-    

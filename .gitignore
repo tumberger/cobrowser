@@ -38,3 +38,6 @@ Thumbs.db
 # Logs
 *.log
 proxy.txt
+
+# Sessions
+cobrowser/api/sessions/
